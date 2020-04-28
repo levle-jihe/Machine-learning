@@ -8,12 +8,17 @@ class Linear(tf.keras.Model):
     def __init__(self):
         super().__init__()
         self.dense = tf.keras.layers.Dense(
-            units=1,
+            units=1, #  这里神经元是1，当神经元数量多的时候，每个神经元都会学习到一组系数和偏置。
             activation=None,
+            # 权重初始化为0，
             kernel_initializer=tf.zeros_initializer(),
+            # 偏置初始化为0
             bias_initializer=tf.zeros_initializer()
         )
-
+    # 定义神经元
+    def call(self, input):
+        output = self.dense(input)
+        return output
 
 # 定义线性模型
 model = Linear()
