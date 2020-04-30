@@ -74,6 +74,9 @@ for batch_index in range(num_batches):
     # 预测的结果
     y_pred = model.predict(data_loader.test_data[start_index: end_index])
     # update_state记录评估器的结果
+    '''sparse_ 该前缀作用是可以把[1, 5, 4],转换成01的向量
+    '''
     sparse_categorical_accuracy.update_state(y_true=data_loader.test_label[start_index: end_index], y_pred=y_pred)
 # result() 方法输出最终的评估指标值（预测正确的样本数占总样本数的比例）
 print("test accuracy: %f" % sparse_categorical_accuracy.result())
+
