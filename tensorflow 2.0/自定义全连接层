@@ -1,0 +1,44 @@
+import tensorflow as tf
+from pipeline import MNISTLoader
+
+
+# 定义连接层
+# 类似于原模型的dense
+class LinearLayer(tf.keras.layers.Layer):
+    def __init__(self, units):
+        super().__init__()
+        self.units = units
+
+    def build(self, input_shape):     # 这里 input_shape 是第一次运行call()时参数inputs的形状
+        # 初始化 w和b
+        self.w = self.add_variable(name='w',
+            shape=[input_shape[-1], self.units], initializer=tf.zeros_initializer())  # shape取最内层样本属性列数
+        self.b = self.add_variable(name='b',
+            shape=[self.units], initializer=tf.zeros_initializer())
+
+    def call(self, inputs):
+        # matmul矩阵乘法
+        y_pred = tf.matmul(inputs, self.w) + self.b  # 可以再嵌套个激活函数
+        return y_pred
+
+
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(),
+
+    LinearLayer(100),
+    LinearLayer(10),
+    tf.keras.layers.Softmax()
+])
+
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+    loss=tf.keras.losses.sparse_categorical_crossentropy,
+    metrics=[tf.keras.metrics.sparse_categorical_accuracy]
+    )
+
+num_epochs = 5
+batch_size = 50
+learning_rate = 0.001
+data_loader = MNISTLoader()
+model.fit(data_loader.train_data, data_loader.train_label, epochs=num_epochs, batch_size=batch_size)
+print(model.evaluate(data_loader.test_data, data_loader.test_label))  
