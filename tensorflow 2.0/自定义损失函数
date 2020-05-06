@@ -1,0 +1,35 @@
+import tensorflow as tf
+from pipeline import MNISTLoader
+
+
+class MeanSquaredError(tf.keras.losses.Loss):
+    # 模型输出的y_pred是概率，y_true是真实值，需要转换成独热编码
+    def call(self, y_true, y_pred):
+        # 由于会被自动升维，先进行降维
+        y_true = tf.squeeze(y_true, axis=-1)
+        # 改动    tf.cast是将原来的浮点数变成整数
+        y_true = tf.one_hot(tf.cast(y_true, dtype='in32'), depth= 10)
+
+        return tf.reduce_mean(tf.reduce_sum(tf.square(y_pred - y_true)))
+
+
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(100, activation=tf.nn.relu),
+    tf.keras.layers.Dense(10),
+    tf.keras.layers.Softmax()
+])
+
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+    loss=tf.keras.losses.sparse_categorical_crossentropy,
+    metrics=[tf.keras.metrics.sparse_categorical_accuracy]
+    )
+
+# 评价部分
+num_epochs = 5
+batch_size = 50
+learning_rate = 0.001
+data_loader = MNISTLoader()
+model.fit(data_loader.train_data, data_loader.train_label, epochs=num_epochs, batch_size=batch_size)
+print(model.evaluate(data_loader.test_data, data_loader.test_label))
