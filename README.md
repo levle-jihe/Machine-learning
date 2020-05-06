@@ -1,4 +1,5 @@
-# Machine-learning  
+# 简单粗暴tensorflow2.0  
+自学
 
 
 
@@ -7,4 +8,4 @@
 
 
 
-# 自己瞎玩
+
